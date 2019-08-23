@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "license": "MIT",
+  "scripts": {
+    "start": "cd client && yarn start && cd .."
+  },
   "dependencies": {
     "three": "^0.107.0"
   }

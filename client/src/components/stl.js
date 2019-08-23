@@ -5,7 +5,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import model from './models/puzzle1.stl';
 
 class STL extends Component {
-  componentDidMount() {
+
+  componentDidMount = (props) => {
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(
       100,
@@ -32,7 +33,7 @@ class STL extends Component {
 
     let mesh;
 
-    var stl = loader.load(model, function (geometry) {
+    loader.load(model, function (geometry) {
       mesh = new THREE.Mesh(geometry, material);
 
       geometry.computeBoundingBox();
@@ -57,7 +58,10 @@ class STL extends Component {
     camera.position.z = 80;
 
     var animate = function () {
+
       requestAnimationFrame(animate);
+
+      // const { rotate } = this.props;
 
       if (mesh) {
         mesh.rotation.x += 0.003;
@@ -65,11 +69,15 @@ class STL extends Component {
         mesh.rotation.z += 0.003;
       }
 
+
+
       renderer.render(scene, camera);
     };
 
     animate();
+
   }
+
   render() {
     return (
       <div ref={ref => (this.mount = ref)} />
