@@ -8,6 +8,8 @@ class STL extends Component {
 
   componentDidMount = (props) => {
     var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x282c34);
+
     var camera = new THREE.PerspectiveCamera(
       100,
       window.innerWidth / window.innerHeight,
