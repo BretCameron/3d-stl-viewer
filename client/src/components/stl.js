@@ -2,11 +2,24 @@ import React, { Component } from "react";
 import * as THREE from "three";
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import model from './models/puzzle1.stl';
+import model from './models/knot2.stl';
 
 class STL extends Component {
+  state = {
+    rotate: false,
+    nodeCount: 0,
+  }
 
-  componentDidMount = (props) => {
+  componentDidMount = () => {
+    this.renderScene();
+  }
+
+  onMouseWheel = (e) => {
+    // prevent page scroll when zooming
+    e.preventDefault();
+  }
+
+  renderScene = () => {
     var scene = new THREE.Scene();
     scene.background = new THREE.Color(0x282c34);
 
@@ -17,19 +30,37 @@ class STL extends Component {
       1000
     );
 
-    var controls = new OrbitControls(camera);
+    var controls = new OrbitControls(camera, this.domRef);
     controls.target.set(0, 0, 0);
+    controls.enableKeys = false;
+    controls.rotateSpeed = 0.5;
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      RIGHT: THREE.MOUSE.ROTATE
+    }
+    controls.update();
+
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    this.mount.appendChild(renderer.domElement);
 
-    var material = new THREE.MeshNormalMaterial({ color: 0x00ffff });
-    // var material = new THREE.MeshStandardMaterial({
-    //   metalness: 1,   // between 0 and 1
-    //   roughness: 0.5, // between 0 and 1
-    //   envMap: envMap,
-    // });
+    if (this.domRef && this.state.nodeCount < 1) {
+      if (this.domRef.firstChild) {
+        this.domRef.removeChild(this.domRef.firstChild);
+      };
+      this.domRef.appendChild(renderer.domElement);
+    };
+
+    var frontSpot = new THREE.SpotLight(0xffffff);
+    frontSpot.position.set(1000, 1000, 1000);
+    scene.add(frontSpot);
+
+    var lambert = new THREE.MeshLambertMaterial({
+      color: 0x9a9a9a,
+      emissive: 0x3a3a3a,
+    });
+
+    var material = lambert;
 
     var loader = new STLLoader();
 
@@ -53,36 +84,36 @@ class STL extends Component {
       console.error(err);
     });
 
-    // var geometry = new THREE.BoxGeometry(2, 2, 2);
-    // var cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
-
     camera.position.z = 80;
+
+    const { rotate } = this.props;
 
     var animate = function () {
 
       requestAnimationFrame(animate);
 
-      // const { rotate } = this.props;
-
-      if (mesh) {
+      if (mesh && rotate) {
         mesh.rotation.x += 0.003;
         mesh.rotation.y += 0.003;
         mesh.rotation.z += 0.003;
       }
-
-
 
       renderer.render(scene, camera);
     };
 
     animate();
 
+    return (
+      <div ref={ref => (this.domRef = ref)} onWheel={this.onMouseWheel} />
+    )
   }
+
 
   render() {
     return (
-      <div ref={ref => (this.mount = ref)} />
+      <>
+        {this.renderScene()}
+      </>
     )
   }
 }
@@ -98,9 +129,11 @@ const fitCameraToObject = function (camera, object, offset, controls) {
   // get bounding box of object - this will be used to setup controls and camera
   boundingBox.setFromObject(object);
 
-  const center = boundingBox.getCenter();
+  const center = new THREE.Vector3();
+  const size = new THREE.Vector3();
 
-  const size = boundingBox.getSize();
+  boundingBox.getCenter(center);
+  boundingBox.getSize(size);
 
   // get the max side of the bounding box (fits to width OR height as needed )
   const maxDim = Math.max(size.x, size.y, size.z);
