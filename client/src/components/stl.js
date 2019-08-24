@@ -55,9 +55,13 @@ class STL extends Component {
     frontSpot.position.set(1000, 1000, 1000);
     scene.add(frontSpot);
 
+    var frontSpot2 = new THREE.SpotLight(0xdddddd);
+    frontSpot2.position.set(500, -500, -500);
+    scene.add(frontSpot2);
+
     var lambert = new THREE.MeshLambertMaterial({
       color: 0x9a9a9a,
-      emissive: 0x3a3a3a,
+      emissive: 0x474747,
     });
 
     var material = lambert;
