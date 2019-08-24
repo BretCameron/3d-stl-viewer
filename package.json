@@ -7,7 +7,5 @@
     "start": "cd client && yarn start && cd ..",
     "build": "cd client && yarn && yarn run build && cd .."
   },
-  "dependencies": {
-    "three": "^0.107.0"
-  }
+  "dependencies": {}
 }
