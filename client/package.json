@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "3d-file-viewer",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -27,5 +27,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "babel": {
+    "env": {
+      "production": {
+        "plugins": [
+          "transform-react-constant-elements",
+          "transform-react-inline-elements"
+        ]
+      }
+    }
   }
 }
