@@ -24,10 +24,10 @@ class STL extends Component {
     scene.background = new THREE.Color(0x282c34);
 
     var camera = new THREE.PerspectiveCamera(
-      100,
+      80,
       window.innerWidth / window.innerHeight,
-      0.01,
-      1000
+      1,
+      100
     );
 
     var controls = new OrbitControls(camera, this.domRef);
@@ -51,20 +51,28 @@ class STL extends Component {
       this.domRef.appendChild(renderer.domElement);
     };
 
-    var frontSpot = new THREE.SpotLight(0xffffff);
+    var frontSpot = new THREE.SpotLight(0xeeeece);
     frontSpot.position.set(1000, 1000, 1000);
     scene.add(frontSpot);
 
-    var frontSpot2 = new THREE.SpotLight(0xdddddd);
+    var frontSpot2 = new THREE.SpotLight(0xddddce);
     frontSpot2.position.set(500, -500, -500);
     scene.add(frontSpot2);
 
-    var lambert = new THREE.MeshLambertMaterial({
-      color: 0x9a9a9a,
-      emissive: 0x474747,
-    });
+    var materials = {
+      lambert: new THREE.MeshLambertMaterial({
+        color: 0x9a9a9a,
+        emissive: 0x474747,
+      }),
+      metal: new THREE.MeshStandardMaterial({
+        color: 0xefefef,
+        emissive: 0x222222,
+        metalness: 0.85,
+        roughness: 0.45,
+      }),
+    }
 
-    var material = lambert;
+    var material = materials.metal;
 
     var loader = new STLLoader();
 
@@ -108,7 +116,7 @@ class STL extends Component {
     animate();
 
     return (
-      <div ref={ref => (this.domRef = ref)} onWheel={this.onMouseWheel} />
+      <div ref={ref => (this.domRef = ref)} onWheel={this.onMouseWheel} style={{ maxHeight: '100vh', overflow: 'hidden', cursor: 'move', }} />
     )
   }
 
