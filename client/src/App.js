@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import STL from './components/stl';
 import './App.css';
 import logo from './components/img/logo2.svg';
+import ThreeContainer from './components/ThreeContainer';
 
 class App extends Component {
   state = {
@@ -18,7 +19,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'fixed', zIndex: '99', top: 0, left: 0, padding: '10px', marginBottom: '-240px' }}>
+          {/* <div style={{ display: 'fixed', zIndex: '99', top: 0, left: 0, padding: '10px', marginBottom: '-240px' }}>
             <img src={logo} alt="logo" style={{ padding: '15px' }} />STL Viewer
           <br /><br />
             <button style={{ cursor: 'pointer', background: 'none', border: 'none' }} onClick={this.toggleRotate}>
@@ -27,8 +28,9 @@ class App extends Component {
                 : <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 22v-20l18 10-18 10z" fill="#ffffffcc" /></svg>
               }
             </button>
-          </div>
-          <STL rotate={rotate} />
+          </div> */}
+          <ThreeContainer move={rotate} />
+          {/* <STL rotate={rotate} /> */}
         </header>
       </div>
     );

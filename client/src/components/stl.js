@@ -116,7 +116,9 @@ class STL extends Component {
     animate();
 
     return (
-      <div ref={ref => (this.domRef = ref)} onWheel={this.onMouseWheel} style={{ maxHeight: '100vh', overflow: 'hidden', cursor: 'move', }} />
+      <div>
+        <div ref={ref => (this.domRef = ref)} onWheel={this.onMouseWheel} style={{ maxHeight: '100vh', overflow: 'hidden', cursor: 'move', }} />
+      </div>
     )
   }
 
