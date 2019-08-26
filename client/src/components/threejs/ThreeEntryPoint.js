@@ -10,6 +10,8 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
     initialCamera: null,
   };
 
+  // Controls Bar
+
   let controlsBar = document.createElement("div");
   controlsBar.style.padding = "12px 0 10px 0";
   controlsBar.style.borderBottom = "1px solid grey";
@@ -27,6 +29,8 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   playIcon.setAttribute("width", "24");
   playIcon.setAttribute("height", "24");
   playIcon.setAttribute("viewBox", "0 0 24 24");
+  playIcon.setAttribute("tabindex", "0");
+  playIcon.setAttribute("type", "button");
   playIcon.style.cursor = "pointer";
   playIcon.style.padding = "15px";
 
@@ -49,6 +53,8 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   resetIcon.setAttribute("width", "24");
   resetIcon.setAttribute("height", "24");
   resetIcon.setAttribute("viewBox", "0 0 24 24");
+  resetIcon.setAttribute("tabindex", "0");
+  resetIcon.setAttribute("type", "button");
   resetIcon.style.cursor = "pointer";
   resetIcon.style.padding = "15px";
   resetIcon.title = "Play";
@@ -210,8 +216,14 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
 
   // On click play button
 
-  if (document.getElementById('play-btn')) {
-    document.getElementById('play-btn').addEventListener('click', () => {
+  function addEventsListeners(query, eventListeners, callback) {
+    eventListeners.forEach(event => {
+      document.querySelector(query).addEventListener(event, callback);
+    })
+  }
+
+  addEventsListeners('#play-btn', ['click', 'keydown'], (e) => {
+    if (e.charCode !== 9 && e.keyCode !== 9) {
       if (state.isPlay) {
         playIcon.innerHTML = '';
         playTitle.innerHTML = 'Play';
@@ -224,20 +236,18 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
         playIcon.appendChild(pausePath);
       };
       state.isPlay = !state.isPlay;
-    });
-  }
+    }
+  });
 
-  if (document.getElementById('reset-btn')) {
-    document.getElementById('reset-btn').addEventListener('click', () => {
+  addEventsListeners('#reset-btn', ['click', 'keydown'], (e) => {
+    if (e.charCode !== 9 && e.keyCode !== 9) {
       state.isPlay = false;
       reset(mesh);
       playIcon.innerHTML = '';
       playIcon.appendChild(playPath);
       resetCameraMatrix(camera, state.initialCamera)
-    });
-  }
-
-
+    }
+  });
 
 }
 
