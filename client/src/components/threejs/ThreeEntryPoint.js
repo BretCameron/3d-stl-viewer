@@ -35,7 +35,7 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   playIcon.style.padding = "15px";
 
   let playTitle = document.createElementNS("http://www.w3.org/2000/svg", "title");
-  playTitle.innerHTML = 'Pause';
+  playTitle.innerHTML = 'Pause (p)';
   playIcon.appendChild(playTitle);
 
   let playPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -57,10 +57,9 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   resetIcon.setAttribute("type", "button");
   resetIcon.style.cursor = "pointer";
   resetIcon.style.padding = "15px";
-  resetIcon.title = "Play";
 
   let resetTitle = document.createElementNS("http://www.w3.org/2000/svg", "title");
-  resetTitle.innerHTML = 'Reset';
+  resetTitle.innerHTML = 'Reset (r)';
   resetIcon.appendChild(resetTitle);
 
   let resetPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -223,7 +222,7 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   }
 
   addEventsListeners('#play-btn', ['click', 'keydown'], (e) => {
-    if (e.charCode !== 9 && e.keyCode !== 9) {
+    if (e.type === 'click' || e.keyCode === 13 || e.keyCode === 32) {
       if (state.isPlay) {
         playIcon.innerHTML = '';
         playTitle.innerHTML = 'Play';
@@ -240,7 +239,7 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   });
 
   addEventsListeners('#reset-btn', ['click', 'keydown'], (e) => {
-    if (e.charCode !== 9 && e.keyCode !== 9) {
+    if (e.type === 'click' || e.keyCode === 13 || e.keyCode === 32) {
       state.isPlay = false;
       reset(mesh);
       playIcon.innerHTML = '';
@@ -249,8 +248,31 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
     }
   });
 
-}
+  document.querySelector('body').addEventListener('keydown', (e) => {
+    if (e.keyCode === 75 || e.keyCode === 80) {
+      if (state.isPlay) {
+        playIcon.innerHTML = '';
+        playTitle.innerHTML = 'Play (p)';
+        playIcon.appendChild(playTitle);
+        playIcon.appendChild(playPath);
+      } else {
+        playIcon.innerHTML = '';
+        playTitle.innerHTML = 'Pause (p)';
+        playIcon.appendChild(playTitle);
+        playIcon.appendChild(pausePath);
+      };
+      state.isPlay = !state.isPlay;
+    };
+    if (e.keyCode === 82) {
+      state.isPlay = false;
+      reset(mesh);
+      playIcon.innerHTML = '';
+      playIcon.appendChild(playPath);
+      resetCameraMatrix(camera, state.initialCamera)
+    };
+  })
 
+}
 
 function play(mesh, speed = 1) {
   mesh.rotation.x += 0.003 * speed;
