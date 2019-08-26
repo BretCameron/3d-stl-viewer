@@ -5,12 +5,57 @@ import model from '../models/knot2.stl';
 
 export default function ThreeEntryPoint(sceneRef, controlsRef) {
 
-  var controlsNode = document.createElement("div");
-  controlsNode.innerHTML = `<button id="play-btn">Play</button>`
+  let state = {
+    isPlay: true,
+    initialCamera: null,
+  };
 
-  let isPlay = true;
+  var controlsBar = document.createElement("div");
+  controlsBar.style.padding = "20px";
+  controlsBar.style.borderBottom = "1px solid grey";
+  controlsBar.style.background = "none";
 
-  controlsRef.appendChild(controlsNode);
+  // Play Button
+
+  var playIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  playIcon.setAttribute("id", "play-btn");
+  playIcon.setAttribute("width", "24");
+  playIcon.setAttribute("height", "24");
+  playIcon.setAttribute("viewBox", "0 0 24 24");
+  playIcon.style.cursor = "pointer";
+  playIcon.style.padding = "15px";
+
+  var playPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  playPath.setAttributeNS(null, "d", "M3 22v-20l18 10-18 10z");
+  playPath.setAttributeNS(null, "fill", "#ffffffcc");
+
+  var pausePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  pausePath.setAttributeNS(null, "d", "M11 22h-4v-20h4v20zm6-20h-4v20h4v-20z");
+  pausePath.setAttributeNS(null, "fill", "#ffffffcc");
+
+  // Reset Button
+
+  var resetIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  resetIcon.setAttribute("id", "reset-btn");
+  resetIcon.setAttribute("width", "24");
+  resetIcon.setAttribute("height", "24");
+  resetIcon.setAttribute("viewBox", "0 0 24 24");
+  resetIcon.style.cursor = "pointer";
+  resetIcon.style.padding = "15px";
+
+  var resetPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  resetPath.setAttributeNS(null, "d", "M2.458 9.012c-.297.947-.458 1.955-.458 3 0 5.52 4.481 10 10 10 5.52 0 10-4.48 10-10 0-5.519-4.48-10-10-10-2.121 0-4.083.668-5.703 1.796l1.703 2.204h-6.58l1.935-6.012 1.718 2.223c1.958-1.389 4.346-2.211 6.927-2.211 6.623 0 12 5.377 12 12s-5.377 11.988-12 11.988-12-5.365-12-11.988c0-1.036.132-2.041.379-3h2.079zm10.35-3.012c.292.821.375 1.346 1.01 1.609.637.264 1.073-.052 1.854-.423l1.142 1.142c-.373.787-.687 1.218-.423 1.854.262.634.784.716 1.609 1.009v1.617c-.816.29-1.347.375-1.61 1.01-.264.636.052 1.071.424 1.853l-1.142 1.142c-.79-.375-1.219-.687-1.85-.424-.639.265-.723.793-1.014 1.611h-1.616c-.292-.821-.375-1.347-1.01-1.61-.637-.264-1.072.052-1.854.423l-1.142-1.142c.366-.771.689-1.212.423-1.854-.263-.635-.793-.719-1.609-1.009v-1.617c.817-.29 1.346-.373 1.609-1.009.264-.637-.051-1.07-.423-1.854l1.142-1.142c.788.374 1.218.687 1.854.423.635-.263.719-.792 1.01-1.609h1.616zm-.808 8c-1.105 0-2-.896-2-2 0-1.105.895-2.001 2-2.001 1.104 0 2 .896 2 2.001 0 1.104-.896 2-2 2z");
+  resetPath.setAttributeNS(null, "fill-rule", "evenodd");
+  resetPath.setAttributeNS(null, "clip-rule", "evenodd");
+  resetPath.setAttributeNS(null, "fill", "#ffffffcc");
+
+  playIcon.appendChild(pausePath);
+  controlsBar.appendChild(playIcon);
+
+  resetIcon.appendChild(resetPath);
+  controlsBar.appendChild(resetIcon);
+
+  controlsRef.appendChild(controlsBar);
 
 
   var scene = new THREE.Scene();
@@ -71,7 +116,7 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
     geometry.center()
     scene.add(mesh);
 
-    fitCameraToObject(camera, mesh, 14);
+    fitCameraToObject(camera, mesh, 14, null, state);
 
   }, undefined, function (err) {
     console.error(err);
@@ -84,7 +129,7 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
     requestAnimationFrame(animate);
 
     if (mesh) {
-      isPlay ? play(mesh) : pause(mesh);
+      state.isPlay ? play(mesh) : pause(mesh);
     }
 
     renderer.render(scene, camera);
@@ -92,7 +137,7 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
 
   animate();
 
-  const fitCameraToObject = function (camera, object, offset, controls) {
+  const fitCameraToObject = function (camera, object, offset, controls, state) {
 
     offset = offset || 1.25;
 
@@ -120,7 +165,14 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
     const cameraToFarEdge = (minZ < 0) ? -minZ + cameraZ : cameraZ - minZ;
 
     camera.far = cameraToFarEdge * 3;
+
+
     camera.updateProjectionMatrix();
+
+    if (!state.initialCamera) {
+      console.log('don');
+      state.initialCamera = camera.clone();
+    };
 
     if (controls) {
 
@@ -141,24 +193,55 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
 
   sceneRef.appendChild(renderer.domElement);
 
+
+  // On click play button
+
   if (document.getElementById('play-btn')) {
     document.getElementById('play-btn').addEventListener('click', () => {
-      isPlay = !isPlay;
-      console.log('click')
+      if (state.isPlay) {
+        playIcon.innerHTML = '';
+        playIcon.appendChild(playPath);
+      } else {
+        playIcon.innerHTML = '';
+        playIcon.appendChild(pausePath);
+      };
+      state.isPlay = !state.isPlay;
     });
   }
+
+  if (document.getElementById('reset-btn')) {
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      state.isPlay = false;
+      reset(mesh);
+      playIcon.innerHTML = '';
+      playIcon.appendChild(playPath);
+      resetCameraMatrix(camera, state.initialCamera)
+    });
+  }
+
+
 
 }
 
 
-function play(mesh) {
-  mesh.rotation.x += 0.003;
-  mesh.rotation.y += 0.003;
-  mesh.rotation.z += 0.003;
+function play(mesh, speed = 1) {
+  mesh.rotation.x += 0.003 * speed;
+  mesh.rotation.y += 0.003 * speed;
+  mesh.rotation.z += 0.003 * speed;
 }
 
 function pause(mesh) {
   mesh.rotation.x += 0;
   mesh.rotation.y += 0;
   mesh.rotation.z += 0;
+}
+
+function reset(mesh) {
+  mesh.rotation.x = 0;
+  mesh.rotation.y = 0;
+  mesh.rotation.z = 0;
+}
+
+function resetCameraMatrix(camera, initialCamera) {
+  camera.copy(initialCamera);
 }
