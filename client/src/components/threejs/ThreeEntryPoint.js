@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
+// import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
+import { STLLoader } from '../../lib/STLLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import model from '../models/knot2.stl';
 
@@ -75,7 +76,6 @@ export default function ThreeEntryPoint(sceneRef, controlsRef) {
   controlsBar.appendChild(resetIcon);
 
   controlsRef.appendChild(controlsBar);
-
 
   let scene = new THREE.Scene();
   scene.background = new THREE.Color(0x282c34);
